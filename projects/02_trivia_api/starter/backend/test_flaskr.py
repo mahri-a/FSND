@@ -6,6 +6,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flaskr import create_app
 from models import setup_db, Question, Category
 
+DB_HOST = os.getenv('DB_HOST', '127.0.0.1:5432')  
+DB_USER = os.getenv('DB_USER', 'postgres')  
+DB_PASSWORD = os.getenv('DB_PASSWORD', 'postgres')  
 
 class TriviaTestCase(unittest.TestCase):
     """This class represents the trivia test case"""
@@ -15,14 +18,13 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        # self.database_path = "postgres://{}/{}".format('localhost:5432', self.database_name)
-        self.database_path = "postgres://{}:{}@{}/{}".format('mahri', 'pass', 'localhost:5432', self.database_name)
+        self.database_path = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, self.database_name)
         setup_db(self.app, self.database_path)
 
         self.new_question = {
-            'question': 'What is the capital city of Turkmenistan?',
-            'answer': 'Ashgabat',
-            'difficulty': 5,
+            'question': 'What is the capital city of Norway?',
+            'answer': 'Oslo',
+            'difficulty': 1,
             'category': 3
         }
 
@@ -85,7 +87,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['deleted'], 5)
         self.assertTrue(data['total_questions'])
-        self.assertTrue(len(data['questions']))
         self.assertEqual(question, None)
 
     def test_422_if_question_does_not_exist(self):
@@ -104,7 +105,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['created'])
         self.assertTrue(data['total_questions'])
-        self.assertTrue(len(data['questions']))
 
     def test_405_if_adding_question_not_allowed(self):
         res = self.client().post('/questions/1', json=self.new_question)
@@ -115,12 +115,12 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Method not allowed') 
 
     def test_search_questions(self):
-        res = self.client().post('/questions/search', json={'searchTerm': 'title'})
+        res = self.client().post('/questions/search', json={'searchTerm': 'soccer'})
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['search_term'], 'title')
+        self.assertEqual(data['search_term'], 'soccer')
         self.assertTrue(data['total_questions_found'])
         self.assertTrue(len(data['questions']))
 
@@ -170,7 +170,7 @@ class TriviaTestCase(unittest.TestCase):
             'quiz_category': {'type': None, 'id': None},
             'previous_questions': [22, 23]
         }
-        print(quiz_data)
+    
         res = self.client().post('/quizzes', json=quiz_data)
         data = json.loads(res.data)
         
