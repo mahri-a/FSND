@@ -34,9 +34,6 @@ CORS(app)
 def get_drinks():
     drinks_query = Drink.query.all()
 
-    if len(drinks_query) == 0:
-        abort(404)
-
     drinks = [drink.short() for drink in drinks_query]
 
     return jsonify({
@@ -100,8 +97,10 @@ def create_drink(payload):
             'success': True,
             'drinks': [new_drink.long()]
         }), 200
-    except:
-        abort(422)
+    except for AuthError as auth_error:
+        print(auth_error)
+    except for Exception as error:
+        print(error)
 
 
 '''
@@ -112,7 +111,8 @@ def create_drink(payload):
         it should update the corresponding row for <id>
         it should require the 'patch:drinks' permission
         it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
+    returns status code 200 and json {"success": True, "drinks": drink}
+        where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
 
@@ -146,7 +146,8 @@ def update_drink(payload, drink_id):
         it should respond with a 404 error if <id> is not found
         it should delete the corresponding row for <id>
         it should require the 'delete:drinks' permission
-    returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
+    returns status code 200 and json {"success": True, "delete": id}
+        where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
 
@@ -195,7 +196,7 @@ def unprocessable(error):
 
 '''
 @TODO implement error handler for 404
-    error handler should conform to general task above 
+    error handler should conform to general task above
 '''
 
 
@@ -210,7 +211,7 @@ def not_found(error):
 
 '''
 @TODO implement error handler for AuthError
-    error handler should conform to general task above 
+    error handler should conform to general task above
 '''
 
 
