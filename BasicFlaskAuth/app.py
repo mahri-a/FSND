@@ -3,13 +3,15 @@ import json
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 
-AUTH0_DOMAIN = @TODO_REPLACE_WITH_YOUR_DOMAIN
+AUTH0_DOMAIN = 'fsnd-mahri.eu.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = @TODO_REPLACE_WITH_YOUR_API_AUDIENCE
+API_AUDIENCE = 'Image'
 
 
 class AuthError(Exception):
