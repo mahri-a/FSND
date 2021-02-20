@@ -39,7 +39,7 @@ def get_drinks():
     return jsonify({
         'success': True,
         'drinks': drinks
-    })
+    }), 200
 
 
 '''
@@ -97,9 +97,9 @@ def create_drink(payload):
             'success': True,
             'drinks': [new_drink.long()]
         }), 200
-    except for AuthError as auth_error:
+    except AuthError as auth_error:
         print(auth_error)
-    except for Exception as error:
+    except Exception as error:
         print(error)
 
 
